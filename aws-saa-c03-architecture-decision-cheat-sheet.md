@@ -441,7 +441,46 @@ Choose this when:
 
 ## Service Reference Cards
 
-Each service card is concise by design. Use it as a decision checklist.
+**Infrastructure Management Quick Reference**
+
+This table categorizes all in-scope SAA-C03 services by infrastructure management model to help you quickly identify serverless vs managed infrastructure options:
+
+| **Fully Managed by AWS (Serverless)** | **User Manages Infrastructure** | **Hybrid/Mixed Model** |
+|---|---|---|
+| Athena, Data Firehose, Glue, Lake Formation | EC2, EMR (cluster mode), ECS on EC2, EKS on EC2 | Aurora (serverless + provisioned), DynamoDB (on-demand + provisioned) |
+| Lambda, Fargate, App Runner | RDS (provisioned instances), Redshift (provisioned) | Kinesis (on-demand + provisioned shards) |
+| DynamoDB, S3, EFS (serverless options) | ElastiCache (node-based), DocumentDB, Neptune | ElastiCache (serverless + node-based) |
+| Aurora Serverless, Redshift Serverless | OpenSearch Service (cluster), MSK (cluster) | EMR (cluster + serverless) |
+| API Gateway, AppSync, EventBridge | Batch (manages EC2/Fargate for you but runs on compute) | EFS (elastic + provisioned throughput) |
+| SQS, SNS, Step Functions | MQ (broker instances) | FSx (managed but sized capacity) |
+| CloudFront, Route 53, Global Accelerator | EC2 Auto Scaling (manages instance lifecycle) | Neptune (provisioned + serverless) |
+| Cognito, Secrets Manager, KMS | Network Firewall (endpoint-based) | MSK (provisioned + serverless) |
+| WAF, Shield, GuardDuty, Macie, Inspector | NAT Gateway (managed but charged per GB) | OpenSearch (provisioned + serverless) |
+| CloudTrail, Config, CloudWatch | Direct Connect (dedicated connection) | Redshift (provisioned + serverless) |
+| X-Ray, Textract, Rekognition, Comprehend | CloudHSM (dedicated HSM) | SageMaker (instances + serverless) |
+| Translate, Transcribe, Polly, Lex | VMware Cloud on AWS, Outposts |  |
+| QuickSight/Quick Suite, Data Exchange | Storage Gateway (on-prem appliance + cloud) |  |
+| Amplify Hosting, Device Farm | Client VPN (endpoint hours) |  |
+| DataSync, DMS, Application Migration Service | EBS, Instance Store (attached to EC2) |  |
+| Transfer Family, Backup | Directory Service (domain controllers) |  |
+| Organizations, IAM, IAM Identity Center, RAM | Managed Grafana (workspace-based) |  |
+| CloudFormation, Service Catalog, Control Tower | Managed Prometheus (workspace-based) |  |
+| Trusted Advisor, Compute Optimizer, Well-Architected Tool | Elastic Beanstalk (manages infra for you) |  |
+| Cost Explorer, Budgets, Savings Plans | FSx for Windows/Lustre/ONTAP/OpenZFS |  |
+| Kendra, AppFlow | VPC endpoints, PrivateLink, Transit Gateway |  |
+| Snow Family (physical devices), Wavelength | Site-to-Site VPN |  |
+| Artifact, Audit Manager, Security Hub, Detective | ELB (ALB, NLB, GWLB - managed but endpoint-based) |  |
+| Certificate Manager, Firewall Manager | Elastic Transcoder, Kinesis Video Streams |  |
+
+**Key Distinctions:**
+
+- **Fully Managed by AWS (Serverless)**: No infrastructure provisioning or capacity planning. AWS handles all underlying resources. Pay-per-use or consumption-based pricing.
+- **User Manages Infrastructure**: You provision, size, and manage instances, clusters, nodes, or capacity. Responsible for patching (in some cases), scaling decisions, and capacity planning.
+- **Hybrid/Mixed Model**: Service offers both serverless and provisioned modes, or managed infrastructure with capacity sizing decisions.
+
+**Note**: Each service card below now includes an "Infrastructure management" field for quick identification during exam scenarios. When a scenario mentions "no servers to manage," "serverless," or "operational overhead," prioritize services in the "Fully Managed by AWS" category.
+
+---
 
 ### Analytics
 
@@ -450,6 +489,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Serverless SQL query service for data in S3. |
+| Infrastructure management | **Fully managed by AWS** (Serverless) - No infrastructure to provision or manage. |
 | Purpose | Ad hoc analytics without provisioning a data warehouse. |
 | When to use | Query logs, CSV/JSON/Parquet, data lake objects. |
 | When NOT to use | Millisecond application queries or heavy BI concurrency needing warehouse tuning. |
@@ -467,6 +507,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Marketplace for third-party datasets. |
+| Infrastructure management | **Fully managed by AWS** - Marketplace and delivery mechanisms are managed; no infrastructure required. |
 | Purpose | Subscribe to and use external data in AWS. |
 | When to use | Need curated external datasets for analytics, ML, or enrichment. |
 | When NOT to use | Internal ETL or private app integration. |
@@ -484,6 +525,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Managed delivery stream for loading streaming data into destinations. |
+| Infrastructure management | **Fully managed by AWS** (Serverless) - Automatic scaling and buffering; no servers to manage. |
 | Purpose | Buffer, transform, and deliver streaming records. |
 | When to use | Near-real-time delivery to S3, Redshift, OpenSearch, Splunk, HTTP endpoints. |
 | When NOT to use | Complex consumer processing or replayable custom stream consumers. |
@@ -501,6 +543,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Managed big data platform for Spark, Hive, Presto, and Hadoop ecosystems. |
+| Infrastructure management | **User manages infrastructure** - You provision and manage cluster instances (EC2/EKS), though AWS manages the EMR control plane. Serverless option available. |
 | Purpose | Large-scale distributed analytics and ETL. |
 | When to use | Existing Spark/Hadoop jobs, large transformations, data lake processing. |
 | When NOT to use | Simple SQL over S3 where Athena is enough. |
@@ -518,6 +561,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Serverless data integration, ETL, crawlers, and Data Catalog. |
+| Infrastructure management | **Fully managed by AWS** (Serverless) - No infrastructure provisioning; AWS handles compute resources automatically. |
 | Purpose | Discover, catalog, transform, and prepare data. |
 | When to use | Serverless ETL, schema discovery, data lake cataloging. |
 | When NOT to use | Ultra-low-latency streaming application logic. |
@@ -535,6 +579,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Family of managed streaming services for real-time data ingestion, processing, delivery, and video streams. |
+| Infrastructure management | **Mixed** - Data Streams and Video Streams are fully managed but require shard/stream capacity planning. Firehose is serverless. Analytics/Flink applications may require provisioned capacity. |
 | Purpose | Choose the correct Kinesis capability for streaming data workloads. |
 | When to use | Scenarios mention real-time streams, ordered event ingestion, clickstreams, IoT telemetry, logs, or video streams. |
 | When NOT to use | Simple task buffering where SQS is enough, or simple pub/sub fan-out where SNS/EventBridge fits better. |
@@ -552,6 +597,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Real-time streaming data service with ordered shards. |
+| Infrastructure management | **Hybrid** - Fully managed service, but requires shard capacity planning (provisioned mode) or uses on-demand auto-scaling. |
 | Purpose | Ingest and process high-volume event streams. |
 | When to use | Multiple consumers, replay, ordering per partition key, custom stream processing. |
 | When NOT to use | Simple delivery to S3 where Firehose is enough. |
@@ -569,6 +615,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Data lake governance and access control service. |
+| Infrastructure management | **Fully managed by AWS** - Control plane service; no infrastructure to manage. |
 | Purpose | Manage fine-grained permissions for lake data. |
 | When to use | Centralized data lake access across accounts, tables, columns, and rows. |
 | When NOT to use | Simple single-bucket app storage. |
@@ -586,6 +633,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Managed Apache Kafka. |
+| Infrastructure management | **Hybrid** - MSK Provisioned requires broker capacity planning; MSK Serverless is fully managed without infrastructure decisions. |
 | Purpose | Kafka-compatible event streaming. |
 | When to use | Existing Kafka apps, Kafka APIs, ecosystem compatibility. |
 | When NOT to use | AWS-native streams are acceptable and simpler with Kinesis. |
@@ -603,6 +651,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Managed OpenSearch for search, log analytics, and observability. |
+| Infrastructure management | **Hybrid** - Provisioned clusters require node/storage sizing; Serverless option available for hands-off operations. |
 | Purpose | Full-text search and near-real-time analytics. |
 | When to use | Search boxes, log exploration, dashboards. |
 | When NOT to use | Primary transactional database. |
@@ -620,6 +669,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | AWS business intelligence and analytics experience, with QuickSight as the BI capability. |
+| Infrastructure management | **Fully managed by AWS** (Serverless) - No infrastructure to provision; pay per user/session. |
 | Purpose | Dashboards, BI visuals, and embedded analytics. |
 | When to use | Business users need dashboards over AWS or external data. |
 | When NOT to use | Raw ETL, stream processing, or operational alerting. |
@@ -637,6 +687,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Managed petabyte-scale data warehouse. |
+| Infrastructure management | **Hybrid** - Provisioned clusters require node sizing and management; Redshift Serverless option available for automatic capacity scaling. |
 | Purpose | SQL analytics over structured/semi-structured data. |
 | When to use | Complex analytics, BI, high concurrency, warehouse workloads. |
 | When NOT to use | OLTP application transactions or simple ad hoc S3 queries. |
@@ -656,6 +707,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Managed SaaS data integration service. |
+| Infrastructure management | **Fully managed by AWS** (Serverless) - No infrastructure required; flows run on AWS-managed capacity. |
 | Purpose | Transfer data between SaaS apps and AWS services. |
 | When to use | Sync Salesforce/Slack/Google/SaaS data into S3 or analytics targets. |
 | When NOT to use | Low-latency app messaging or complex custom ETL. |
@@ -673,6 +725,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Managed GraphQL API service. |
+| Infrastructure management | **Fully managed by AWS** (Serverless) - No infrastructure to manage; automatic scaling. |
 | Purpose | Build GraphQL APIs with real-time and offline features. |
 | When to use | Mobile/web apps need GraphQL, subscriptions, DynamoDB/Lambda integration. |
 | When NOT to use | Simple REST API where API Gateway is enough. |
@@ -690,6 +743,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Serverless event bus and scheduler. |
+| Infrastructure management | **Fully managed by AWS** (Serverless) - Event bus runs on AWS-managed infrastructure. |
 | Purpose | Route events between AWS services, SaaS apps, and custom apps. |
 | When to use | Event-driven architectures, SaaS integration, loosely coupled routing. |
 | When NOT to use | Large ordered stream replay where Kinesis/MSK fits better. |
@@ -707,6 +761,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Managed ActiveMQ and RabbitMQ brokers. |
+| Infrastructure management | **User manages infrastructure** - Broker instances require sizing and capacity planning; AWS manages broker software. |
 | Purpose | Migrate existing broker-based applications. |
 | When to use | Need JMS, AMQP, MQTT, STOMP, OpenWire, RabbitMQ compatibility. |
 | When NOT to use | New cloud-native apps that can use SQS/SNS/EventBridge. |
@@ -724,6 +779,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Managed pub/sub notification service. |
+| Infrastructure management | **Fully managed by AWS** (Serverless) - No infrastructure to provision; automatic scaling. |
 | Purpose | Fan-out messages to multiple subscribers. |
 | When to use | Push events to SQS, Lambda, HTTP, email, SMS, mobile push. |
 | When NOT to use | Pull-based work queue with one consumer group. |
@@ -741,6 +797,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Managed message queue. |
+| Infrastructure management | **Fully managed by AWS** (Serverless) - No servers to manage; automatic scaling. |
 | Purpose | Decouple and buffer asynchronous work. |
 | When to use | Worker queues, backpressure, retries, DLQs. |
 | When NOT to use | Pub/sub fan-out without queues or ordered stream replay. |
@@ -758,6 +815,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Serverless workflow orchestration. |
+| Infrastructure management | **Fully managed by AWS** (Serverless) - No infrastructure; workflows run on AWS-managed capacity. |
 | Purpose | Coordinate distributed steps with state, retries, and branching. |
 | When to use | Multi-step business processes, sagas, ETL, approvals, retries. |
 | When NOT to use | Single simple function or high-throughput streaming analytics. |
@@ -777,6 +835,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Resizable virtual machines. |
+| Infrastructure management | **User manages infrastructure** - Full control over instances, OS, patching, scaling configuration. |
 | Purpose | General compute with OS/runtime control. |
 | When to use | Custom agents, kernel tuning, GPUs, legacy apps, specialized networking. |
 | When NOT to use | Simple event-driven code or containers with no server control requirement. |
@@ -794,6 +853,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Maintains and scales EC2 fleets. |
+| Infrastructure management | **User manages infrastructure** - Manages instance lifecycle but you configure launch templates, AMIs, and policies. |
 | Purpose | Elastic capacity and self-healing. |
 | When to use | Horizontally scalable EC2 applications. |
 | When NOT to use | Stateful singleton servers without externalized state. |
@@ -811,6 +871,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Unified scaling plans for multiple resources. |
+| Infrastructure management | **Fully managed by AWS** - Control plane service that orchestrates scaling across services. |
 | Purpose | Coordinate scaling across services. |
 | When to use | Need central scaling plans for EC2, ECS, DynamoDB, Aurora replicas. |
 | When NOT to use | One simple resource with native scaling settings. |
@@ -828,6 +889,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Managed batch job scheduler. |
+| Infrastructure management | **Hybrid** - AWS manages job scheduling; you define compute environments (EC2/Fargate) but AWS provisions resources. |
 | Purpose | Run containerized batch workloads at scale. |
 | When to use | Scientific jobs, rendering, ETL, ML batch tasks. |
 | When NOT to use | Always-on APIs or simple Lambda-scale jobs. |
@@ -845,6 +907,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | PaaS for deploying web apps. |
+| Infrastructure management | **Hybrid** - AWS manages underlying infrastructure (EC2, ELB, ASG) but you control application code and environment settings. |
 | Purpose | Simplify deployment while using AWS resources underneath. |
 | When to use | Developers want app deployment without manually wiring ELB/ASG/EC2. |
 | When NOT to use | Need fine-grained infrastructure control or modern container orchestration. |
@@ -862,6 +925,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Serverless function compute. |
+| Infrastructure management | **Fully managed by AWS** (Serverless) - No servers to manage; AWS handles all infrastructure. |
 | Purpose | Run code in response to events without managing servers. |
 | When to use | Short stateless tasks, API backends, event processing, automation. |
 | When NOT to use | Long-running tasks over 15 minutes, persistent connections, OS control. |
@@ -879,6 +943,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Serverless compute for containers. |
+| Infrastructure management | **Fully managed by AWS** (Serverless) - No EC2 hosts to manage; AWS provisions container compute automatically. |
 | Purpose | Run containers without managing EC2 hosts. |
 | When to use | Container workloads with low infrastructure operations. |
 | When NOT to use | Need host-level access, daemonsets, custom kernel, or cheapest steady large fleets. |
@@ -896,6 +961,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | AWS-native container orchestration. |
+| Infrastructure management | **Hybrid** - Control plane fully managed; launch on EC2 (you manage hosts) or Fargate (serverless). |
 | Purpose | Run and manage Docker containers. |
 | When to use | Microservices, batch containers, app modernization with AWS-native ops. |
 | When NOT to use | Need Kubernetes API/ecosystem. |
@@ -913,6 +979,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Run ECS tasks on customer-managed infrastructure. |
+| Infrastructure management | **User manages infrastructure** - You manage on-prem/edge servers; AWS manages ECS control plane. |
 | Purpose | Extend ECS control to on-prem or edge servers. |
 | When to use | Hybrid container management with ECS APIs. |
 | When NOT to use | Fully managed AWS-only containers. |
@@ -930,6 +997,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Managed Kubernetes service. |
+| Infrastructure management | **Hybrid** - Control plane fully managed by AWS; worker nodes on EC2 (you manage) or Fargate (serverless). |
 | Purpose | Run Kubernetes workloads on AWS. |
 | When to use | Need Kubernetes APIs, Helm, operators, portability, ecosystem. |
 | When NOT to use | AWS-native containers with simpler operations are enough. |
@@ -947,6 +1015,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | EKS-compatible Kubernetes outside AWS. |
+| Infrastructure management | **User manages infrastructure** - You manage all hardware and infrastructure; AWS provides software and support. |
 | Purpose | Hybrid/on-prem Kubernetes consistency. |
 | When to use | Need EKS-like Kubernetes on customer-managed infrastructure. |
 | When NOT to use | Standard managed Kubernetes in AWS. |
@@ -964,6 +1033,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Open-source Kubernetes distribution used by Amazon EKS. |
+| Infrastructure management | **User manages infrastructure** - You operate the entire cluster lifecycle; it's software only, not a managed service. |
 | Purpose | Provide the same Kubernetes components and versions used by EKS for self-managed environments. |
 | When to use | Need a consistent Kubernetes distribution for self-managed clusters. |
 | When NOT to use | Need a managed Kubernetes control plane; use Amazon EKS. |
@@ -981,6 +1051,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Managed container image registry. |
+| Infrastructure management | **Fully managed by AWS** - No infrastructure to manage; AWS handles registry scaling and availability. |
 | Purpose | Store, scan, and distribute container images. |
 | When to use | ECS/EKS/Lambda container images. |
 | When NOT to use | Non-container artifact management. |
@@ -998,6 +1069,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | AWS-managed infrastructure installed on-premises. |
+| Infrastructure management | **Hybrid** - AWS provides and manages hardware; you manage physical site and connectivity. |
 | Purpose | Run AWS services locally for low latency or data residency. |
 | When to use | Local processing with AWS APIs and hybrid requirements. |
 | When NOT to use | Normal cloud workloads without location constraints. |
@@ -1015,6 +1087,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | AWS infrastructure embedded in 5G provider networks. |
+| Infrastructure management | **Hybrid** - AWS manages infrastructure in carrier locations; you deploy applications. |
 | Purpose | Ultra-low-latency mobile edge apps. |
 | When to use | 5G apps needing single-digit millisecond latency to devices. |
 | When NOT to use | General edge caching; use CloudFront. |
@@ -1032,6 +1105,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | VMware SDDC running on AWS infrastructure. |
+| Infrastructure management | **User manages infrastructure** - You manage VMware clusters and workloads; AWS provides dedicated hardware. |
 | Purpose | Migrate/extend VMware workloads. |
 | When to use | Need vSphere compatibility and rapid data center extension. |
 | When NOT to use | Cloud-native modernization is acceptable. |
@@ -1051,6 +1125,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Managed relational databases for common engines. |
+| Infrastructure management | **User manages infrastructure** - You choose instance types and storage; AWS manages patching and backups but you size capacity. |
 | Purpose | Run SQL databases with managed backups, patching, and HA options. |
 | When to use | OLTP apps needing SQL, transactions, familiar engines. |
 | When NOT to use | Massive key-value scale or schema-flexible access where DynamoDB fits. |
@@ -1068,6 +1143,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | AWS cloud-native MySQL/PostgreSQL-compatible relational database. |
+| Infrastructure management | **Hybrid** - Provisioned clusters require instance sizing; Aurora Serverless is fully managed without instance selection. |
 | Purpose | High-performance managed relational workloads. |
 | When to use | Need relational compatibility with better HA/read scaling than standard RDS. |
 | When NOT to use | Non-relational access or cheapest small database. |
@@ -1085,6 +1161,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | On-demand auto-scaling Aurora capacity. |
+| Infrastructure management | **Fully managed by AWS** (Serverless) - No instance selection; capacity scales automatically based on demand. |
 | Purpose | Relational database capacity that scales with demand. |
 | When to use | Variable/spiky relational workloads, dev/test, unpredictable traffic. |
 | When NOT to use | Strict capacity control or unsupported engine/features. |
@@ -1102,6 +1179,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Serverless key-value and document database. |
+| Infrastructure management | **Fully managed by AWS** (Serverless) - No servers or capacity planning in on-demand mode; provisioned mode requires capacity settings. |
 | Purpose | Low-latency access at massive scale. |
 | When to use | Known access patterns, high scale, serverless apps, carts, sessions, IoT. |
 | When NOT to use | Complex joins, ad hoc SQL analytics, relational constraints. |
@@ -1119,6 +1197,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Managed Redis/Valkey and Memcached-compatible caching. |
+| Infrastructure management | **Hybrid** - Node-based clusters require sizing; Serverless option available for Redis/Valkey without node management. |
 | Purpose | Reduce latency and database load. |
 | When to use | Read-heavy apps, sessions, leaderboards, rate limiting, pub/sub cache use cases. |
 | When NOT to use | Durable primary database unless using cache-specific persistence knowingly. |
@@ -1136,6 +1215,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Managed MongoDB-compatible document database. |
+| Infrastructure management | **User manages infrastructure** - Cluster and instance sizing required; AWS manages software and replication. |
 | Purpose | JSON document workloads using MongoDB APIs. |
 | When to use | Lift/shift MongoDB-like apps requiring managed AWS service. |
 | When NOT to use | Native DynamoDB scale/cost model fits, or exact MongoDB feature parity required. |
@@ -1153,6 +1233,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Managed graph database. |
+| Infrastructure management | **Hybrid** - Provisioned clusters require instance sizing; Serverless option available for automatic capacity management. |
 | Purpose | Store and query highly connected data. |
 | When to use | Fraud rings, recommendations, knowledge graphs, network relationships. |
 | When NOT to use | Simple key-value or relational datasets. |
@@ -1170,6 +1251,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Serverless Apache Cassandra-compatible database. |
+| Infrastructure management | **Fully managed by AWS** (Serverless) - No infrastructure or capacity planning; AWS handles all scaling. |
 | Purpose | Run Cassandra workloads without managing clusters. |
 | When to use | Cassandra Query Language compatibility required. |
 | When NOT to use | No Cassandra requirement; DynamoDB may be simpler. |
@@ -1189,6 +1271,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Managed API front door for REST, HTTP, and WebSocket APIs. |
+| Infrastructure management | **Fully managed by AWS** (Serverless) - No servers to manage; automatic scaling. |
 | Purpose | Expose, secure, throttle, and monitor APIs. |
 | When to use | Serverless APIs, request throttling, auth, API keys, WebSockets. |
 | When NOT to use | Simple container/EC2 HTTP routing where ALB is cheaper/simpler. |
@@ -1206,6 +1289,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Full-stack web/mobile development and hosting platform. |
+| Infrastructure management | **Fully managed by AWS** (Serverless) - Managed hosting and backend provisioning; no servers to manage. |
 | Purpose | Build and deploy front-end apps with AWS backends. |
 | When to use | Static SPA hosting, CI/CD, auth/API/storage for web/mobile. |
 | When NOT to use | Complex enterprise platform requiring custom IaC from the start. |
@@ -1223,6 +1307,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | App testing on real mobile devices and browsers. |
+| Infrastructure management | **Fully managed by AWS** - Testing infrastructure fully managed; no devices to provision. |
 | Purpose | Test mobile/web apps across device combinations. |
 | When to use | Need managed device/browser test coverage. |
 | When NOT to use | Production app hosting or backend testing only. |
@@ -1242,6 +1327,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Isolated virtual network in AWS. |
+| Infrastructure management | **Fully managed by AWS** - VPC infrastructure managed by AWS; you control configuration and design. |
 | Purpose | Define IP ranges, subnets, routing, and network controls. |
 | When to use | Nearly all custom AWS workloads. |
 | When NOT to use | Fully managed services that do not require VPC placement. |
@@ -1259,6 +1345,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Managed load balancing: ALB, NLB, GWLB, Classic. |
+| Infrastructure management | **Fully managed by AWS** - Load balancer infrastructure fully managed; automatic scaling handled by AWS. |
 | Purpose | Distribute traffic and improve availability. |
 | When to use | Multi-AZ apps, TLS termination, health checks. |
 | When NOT to use | Static S3 website behind CloudFront only. |
@@ -1276,6 +1363,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Global content delivery network. |
+| Infrastructure management | **Fully managed by AWS** (Serverless) - Global edge infrastructure fully managed; no servers to provision. |
 | Purpose | Cache and accelerate content/API delivery at edge locations. |
 | When to use | Static/dynamic content acceleration, global users, edge TLS, origin protection. |
 | When NOT to use | Private-only internal apps with no edge requirement. |
@@ -1293,6 +1381,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Managed DNS and domain registration. |
+| Infrastructure management | **Fully managed by AWS** - DNS infrastructure globally distributed and managed; no servers required. |
 | Purpose | Route users to healthy endpoints. |
 | When to use | Public/private DNS, health checks, latency/failover/geolocation routing. |
 | When NOT to use | Layer 7 request routing inside an app; use ALB/API Gateway. |
@@ -1310,6 +1399,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Anycast static IPs routing users over AWS global network. |
+| Infrastructure management | **Fully managed by AWS** - Global network infrastructure fully managed; automatic failover. |
 | Purpose | Improve global availability/performance for TCP/UDP apps. |
 | When to use | Need static global IPs, fast regional failover, non-HTTP acceleration. |
 | When NOT to use | Need content caching; use CloudFront. |
@@ -1327,6 +1417,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Dedicated private network connection to AWS. |
+| Infrastructure management | **User manages infrastructure** - You provision and manage the dedicated connection and on-prem equipment. |
 | Purpose | Predictable bandwidth and private hybrid connectivity. |
 | When to use | High-throughput, consistent latency, private data center connectivity. |
 | When NOT to use | Quick encrypted setup with low traffic; use VPN. |
@@ -1344,6 +1435,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | IPSec VPN between on-prem network and AWS. |
+| Infrastructure management | **Hybrid** - AWS manages VPN endpoints; you manage on-prem VPN configuration. |
 | Purpose | Encrypted hybrid connectivity over the internet. |
 | When to use | Fast setup, backup to Direct Connect, moderate traffic. |
 | When NOT to use | Need consistently high bandwidth/low jitter. |
@@ -1361,6 +1453,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Managed client-based VPN for users. |
+| Infrastructure management | **Fully managed by AWS** - VPN endpoint infrastructure fully managed; automatic scaling. |
 | Purpose | Secure remote user access to VPC/on-prem networks. |
 | When to use | Workforce needs VPN access to private AWS resources. |
 | When NOT to use | Site-to-site network connectivity. |
@@ -1378,6 +1471,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Regional hub for VPC and on-prem connectivity. |
+| Infrastructure management | **Fully managed by AWS** - Transit Gateway infrastructure fully managed; you configure route tables. |
 | Purpose | Simplify many-to-many network routing. |
 | When to use | Many VPCs/accounts/VPNs/Direct Connect attachments. |
 | When NOT to use | Two VPCs with simple peering needs. |
@@ -1395,6 +1489,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Private connectivity to services over AWS network using endpoints. |
+| Infrastructure management | **Fully managed by AWS** - Endpoint infrastructure fully managed; ENIs provisioned automatically. |
 | Purpose | Access services without public internet or CIDR routing exposure. |
 | When to use | Private access to AWS services, SaaS, or your endpoint service. |
 | When NOT to use | Full VPC-to-VPC routing; use peering or Transit Gateway. |
@@ -1414,6 +1509,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Durable object storage. |
+| Infrastructure management | **Fully managed by AWS** (Serverless) - No infrastructure to manage; automatic scaling and durability. |
 | Purpose | Store objects, static content, backups, logs, data lakes. |
 | When to use | Any object workload needing durability, scale, lifecycle, eventing. |
 | When NOT to use | Block storage for databases or shared POSIX file system. |
@@ -1431,6 +1527,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Low-cost archive storage classes within S3. |
+| Infrastructure management | **Fully managed by AWS** (Serverless) - No infrastructure; part of S3's managed service. |
 | Purpose | Retain rarely accessed data cheaply. |
 | When to use | Compliance archives, backups, long-term retention. |
 | When NOT to use | Frequently accessed or low-latency retrieval workloads. |
@@ -1448,6 +1545,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Persistent block storage for EC2. |
+| Infrastructure management | **User manages infrastructure** - You select volume types and sizes; AWS manages underlying storage infrastructure. |
 | Purpose | Boot and data volumes for instances. |
 | When to use | Databases, file systems, low-latency block devices attached to EC2. |
 | When NOT to use | Shared multi-instance file access; use EFS/FSx. |
@@ -1465,6 +1563,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Managed elastic NFS file system. |
+| Infrastructure management | **Hybrid** - Fully managed by AWS; capacity is elastic (serverless) or you can provision throughput. |
 | Purpose | Shared Linux file storage. |
 | When to use | Multiple EC2/ECS/EKS/Lambda clients need shared POSIX files. |
 | When NOT to use | Windows SMB workloads or single-instance block storage. |
@@ -1482,6 +1581,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Managed high-performance file systems. |
+| Infrastructure management | **User manages infrastructure** - You size file system capacity and throughput; AWS manages software and availability. |
 | Purpose | Provide specialized file storage engines. |
 | When to use | Windows SMB, Lustre HPC, NetApp ONTAP, OpenZFS requirements. |
 | When NOT to use | Generic object storage or simple Linux NFS where EFS fits. |
@@ -1499,6 +1599,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Hybrid cloud storage appliance/service. |
+| Infrastructure management | **Hybrid** - You deploy and manage gateway appliance on-prem; AWS manages cloud backend. |
 | Purpose | Connect on-prem apps to AWS storage. |
 | When to use | File, volume, or tape gateway patterns for hybrid migration/backup. |
 | When NOT to use | Pure cloud-native storage with no on-prem dependency. |
@@ -1516,6 +1617,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Centralized backup policy service. |
+| Infrastructure management | **Fully managed by AWS** - Backup infrastructure fully managed; you define policies. |
 | Purpose | Automate backups across AWS services and accounts. |
 | When to use | Need compliance, backup plans, vaults, cross-account/Region copies. |
 | When NOT to use | One-off manual snapshot only. |
@@ -1535,6 +1637,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Online data transfer service. |
+| Infrastructure management | **Fully managed by AWS** - Transfer service fully managed; you deploy agent for on-prem sources. |
 | Purpose | Move files/objects between on-prem, edge, and AWS storage. |
 | When to use | Scheduled or one-time migrations to S3/EFS/FSx. |
 | When NOT to use | Offline petabyte transfer; use Snow Family. |
@@ -1552,6 +1655,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Managed database migration and replication. |
+| Infrastructure management | **Hybrid** - Replication instance sizing required; AWS manages software and orchestration. Serverless option available. |
 | Purpose | Move databases to AWS with minimal downtime. |
 | When to use | Homogeneous/heterogeneous DB migration, CDC replication. |
 | When NOT to use | File transfer or app-level ETL only. |
@@ -1569,6 +1673,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Lift-and-shift server migration service. |
+| Infrastructure management | **Fully managed by AWS** - Migration infrastructure managed; you install agent on source servers. |
 | Purpose | Replicate source servers and launch them on AWS. |
 | When to use | Migrate physical/virtual/cloud servers to EC2. |
 | When NOT to use | Database-only migration or app modernization. |
@@ -1586,6 +1691,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Physical devices for offline data transfer and edge compute. |
+| Infrastructure management | **Hybrid** - AWS provides and manages devices; you manage usage and data loading on-site. |
 | Purpose | Move large datasets or run compute where connectivity is limited. |
 | When to use | TB-PB transfer, disconnected/remote environments. |
 | When NOT to use | Small online transfers with enough bandwidth. |
@@ -1603,6 +1709,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Managed SFTP, FTPS, FTP, and AS2 transfer endpoints. |
+| Infrastructure management | **Fully managed by AWS** - Transfer endpoints fully managed; automatic scaling. |
 | Purpose | Modernize file transfer into AWS storage. |
 | When to use | Partners require SFTP/FTPS/FTP/AS2 access to S3/EFS. |
 | When NOT to use | App-native object APIs are acceptable. |
@@ -1622,6 +1729,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Identity and access management for AWS resources. |
+| Infrastructure management | **Fully managed by AWS** - Global service; no infrastructure to manage. |
 | Purpose | Authenticate and authorize AWS API actions. |
 | When to use | Every AWS account/resource permission design. |
 | When NOT to use | End-user app sign-up/sign-in; use Cognito. |
@@ -1639,6 +1747,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Central workforce access service for AWS accounts/apps. |
+| Infrastructure management | **Fully managed by AWS** - Global identity service; no infrastructure to manage. |
 | Purpose | Single sign-on and permission sets. |
 | When to use | Multi-account human access with federation. |
 | When NOT to use | Application customer identity; use Cognito. |
@@ -1656,6 +1765,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Multi-account management service. |
+| Infrastructure management | **Fully managed by AWS** - Global service; no infrastructure required. |
 | Purpose | Organize accounts, consolidated billing, and governance. |
 | When to use | Separate workloads/environments/teams with central governance. |
 | When NOT to use | Single-account experiments with no governance needs. |
@@ -1673,6 +1783,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Managed encryption key service. |
+| Infrastructure management | **Fully managed by AWS** - No infrastructure; AWS manages HSMs and key storage. |
 | Purpose | Create/control cryptographic keys used by AWS services/apps. |
 | When to use | Encrypt data at rest with managed audit and access control. |
 | When NOT to use | Need exclusive HSM control; use CloudHSM. |
@@ -1690,6 +1801,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Dedicated hardware security modules in AWS. |
+| Infrastructure management | **User manages infrastructure** - You manage HSM cluster sizing and users; AWS provides dedicated hardware. |
 | Purpose | Customer-managed HSM-backed cryptography. |
 | When to use | Regulatory need for dedicated HSM control or custom crypto. |
 | When NOT to use | Standard AWS service encryption where KMS is sufficient. |
@@ -1707,6 +1819,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Managed secrets storage and rotation. |
+| Infrastructure management | **Fully managed by AWS** - No infrastructure; automatic secret rotation supported. |
 | Purpose | Store database credentials, API keys, tokens. |
 | When to use | Need secret retrieval, rotation, audit, fine-grained access. |
 | When NOT to use | Static non-secret configuration; use Parameter Store. |
@@ -1724,6 +1837,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Managed TLS certificate provisioning and renewal. |
+| Infrastructure management | **Fully managed by AWS** - Certificate lifecycle fully managed; automatic renewal. |
 | Purpose | Secure endpoints with public/private certificates. |
 | When to use | TLS for ALB, CloudFront, API Gateway, NLB, internal PKI. |
 | When NOT to use | Need certificate installed directly on arbitrary EC2 software without exportable public cert. |
@@ -1741,6 +1855,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | App user identity service. |
+| Infrastructure management | **Fully managed by AWS** - User directory and identity federation fully managed. |
 | Purpose | User sign-up, sign-in, federation, and AWS credential vending. |
 | When to use | Web/mobile customer identity and social/enterprise federation. |
 | When NOT to use | AWS workforce/admin access; use IAM Identity Center. |
@@ -1758,6 +1873,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Web application firewall. |
+| Infrastructure management | **Fully managed by AWS** - Firewall infrastructure fully managed; you define rules. |
 | Purpose | Protect HTTP/S apps from common L7 attacks. |
 | When to use | Need IP rules, rate limiting, SQLi/XSS protections, managed rule groups. |
 | When NOT to use | Network-layer firewalling for non-HTTP traffic. |
@@ -1775,6 +1891,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | DDoS protection service. |
+| Infrastructure management | **Fully managed by AWS** - DDoS mitigation fully automated; Shield Advanced adds dedicated support. |
 | Purpose | Protect AWS resources from DDoS attacks. |
 | When to use | Standard is automatic; Advanced for higher protection/support/cost safeguards. |
 | When NOT to use | Application-layer rule customization; use WAF with Shield. |
@@ -1792,6 +1909,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Managed threat detection. |
+| Infrastructure management | **Fully managed by AWS** - Threat detection fully automated; no agents or infrastructure. |
 | Purpose | Detect malicious or suspicious activity. |
 | When to use | Continuous threat detection across accounts. |
 | When NOT to use | Need preventive firewall rules only. |
@@ -1809,6 +1927,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Central security findings and posture management. |
+| Infrastructure management | **Fully managed by AWS** - Aggregation service; no infrastructure required. |
 | Purpose | Aggregate, prioritize, and check security findings. |
 | When to use | Need unified view across GuardDuty, Inspector, Macie, Config, partners. |
 | When NOT to use | Need raw log storage only. |
@@ -1826,6 +1945,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Automated vulnerability management. |
+| Infrastructure management | **Fully managed by AWS** - Scanning infrastructure fully managed; agent-based for EC2. |
 | Purpose | Scan EC2, ECR images, and Lambda for vulnerabilities/exposure. |
 | When to use | Need continuous vulnerability detection. |
 | When NOT to use | Runtime threat detection; use GuardDuty. |
@@ -1843,6 +1963,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Sensitive data discovery for S3. |
+| Infrastructure management | **Fully managed by AWS** - Data classification fully managed; no infrastructure required. |
 | Purpose | Find PII and sensitive data exposure. |
 | When to use | Need classify/protect sensitive data in S3. |
 | When NOT to use | General malware/threat detection. |
@@ -1860,6 +1981,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Resource configuration tracking and compliance rules. |
+| Infrastructure management | **Fully managed by AWS** - Configuration recording fully managed; no infrastructure. |
 | Purpose | Audit resource state changes and evaluate compliance. |
 | When to use | Need configuration history, compliance checks, drift visibility. |
 | When NOT to use | Need application logs/metrics; use CloudWatch. |
@@ -1877,6 +1999,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | AWS API activity logging. |
+| Infrastructure management | **Fully managed by AWS** - Logging infrastructure fully managed; automatic capture. |
 | Purpose | Governance, audit, and forensic trail of API calls. |
 | When to use | Need who/what/when for AWS API actions. |
 | When NOT to use | Need app performance metrics; use CloudWatch/X-Ray. |
@@ -1896,6 +2019,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Metrics, logs, alarms, dashboards, and events/observability. |
+| Infrastructure management | **Fully managed by AWS** - Monitoring infrastructure fully managed; no agents required for many metrics. |
 | Purpose | Monitor AWS resources and applications. |
 | When to use | Need metrics, logs, alarms, dashboards, synthetic checks. |
 | When NOT to use | API audit history; use CloudTrail. |
@@ -1913,6 +2037,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Distributed tracing service. |
+| Infrastructure management | **Fully managed by AWS** - Tracing infrastructure fully managed; SDK/agent integration required. |
 | Purpose | Trace requests across services and identify latency/errors. |
 | When to use | Microservices or serverless apps need request-level tracing. |
 | When NOT to use | Simple infrastructure metric alarms only. |
@@ -1930,6 +2055,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Infrastructure as code service. |
+| Infrastructure management | **Fully managed by AWS** - IaC orchestration fully managed; no infrastructure required. |
 | Purpose | Provision AWS resources declaratively. |
 | When to use | Repeatable environments, versioned infrastructure, drift detection. |
 | When NOT to use | One-off console experimentation only. |
@@ -1947,6 +2073,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Operations hub for fleet and resource management. |
+| Infrastructure management | **Fully managed by AWS** - Systems Manager infrastructure fully managed; SSM agent runs on instances. |
 | Purpose | Patch, run commands, manage parameters, sessions, automation. |
 | When to use | Manage EC2/on-prem instances without SSH, patching, inventory. |
 | When NOT to use | Replace application monitoring entirely. |
@@ -1964,6 +2091,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Managed multi-account landing zone. |
+| Infrastructure management | **Fully managed by AWS** - Landing zone orchestration fully managed; no infrastructure required. |
 | Purpose | Set up and govern accounts using best practices. |
 | When to use | Need standardized account factory and guardrails. |
 | When NOT to use | Single-account workload. |
@@ -1981,6 +2109,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Best-practice checks and recommendations. |
+| Infrastructure management | **Fully managed by AWS** - Recommendation engine fully managed; no infrastructure. |
 | Purpose | Identify cost, security, fault tolerance, performance, service limit issues. |
 | When to use | Need account-level recommendations. |
 | When NOT to use | Deep app-specific architecture review only. |
@@ -1998,6 +2127,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Resource right-sizing recommendation service. |
+| Infrastructure management | **Fully managed by AWS** - Analysis engine fully managed; no infrastructure. |
 | Purpose | Improve cost/performance using utilization analysis. |
 | When to use | Need EC2/EBS/Lambda/ECS/RDS recommendations. |
 | When NOT to use | Need business-level cost allocation only; use Cost Explorer. |
@@ -2015,6 +2145,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Governed catalog of approved IT services. |
+| Infrastructure management | **Fully managed by AWS** - Catalog service fully managed; provisioned resources follow their own model. |
 | Purpose | Let teams provision approved products. |
 | When to use | Need standardized self-service infrastructure. |
 | When NOT to use | Simple one-team IaC repo is enough. |
@@ -2032,6 +2163,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Software license tracking and governance. |
+| Infrastructure management | **Fully managed by AWS** - License tracking fully managed; no infrastructure. |
 | Purpose | Manage BYOL and license compliance. |
 | When to use | Need control over commercial software licenses on AWS/on-prem. |
 | When NOT to use | Open-source workloads with no license tracking needs. |
@@ -2049,6 +2181,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Managed Grafana workspaces for dashboards and visualization. |
+| Infrastructure management | **Fully managed by AWS** - Grafana infrastructure fully managed; workspace-based. |
 | Purpose | Visualize metrics, logs, and traces from AWS and external sources. |
 | When to use | Teams need managed Grafana without operating servers. |
 | When NOT to use | Simple CloudWatch-only dashboards are sufficient. |
@@ -2066,6 +2199,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Managed Prometheus-compatible monitoring service. |
+| Infrastructure management | **Fully managed by AWS** - Prometheus infrastructure fully managed; workspace-based. |
 | Purpose | Collect and query container/application metrics with PromQL. |
 | When to use | Kubernetes/container workloads use Prometheus metrics at scale. |
 | When NOT to use | Basic AWS service metrics where CloudWatch alone is enough. |
@@ -2083,6 +2217,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | AWS service and account health visibility. |
+| Infrastructure management | **Fully managed by AWS** - Health dashboard fully managed; no infrastructure. |
 | Purpose | Track events affecting AWS services/resources. |
 | When to use | Need operational awareness of AWS-side events. |
 | When NOT to use | Application metrics and custom alarms. |
@@ -2100,6 +2235,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Tool for reviewing workloads against Well-Architected Framework. |
+| Infrastructure management | **Fully managed by AWS** - Review tool fully managed; no infrastructure. |
 | Purpose | Identify risks and improvement plans. |
 | When to use | Formal architecture reviews. |
 | When NOT to use | Continuous telemetry collection. |
@@ -2119,6 +2255,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Cost analysis and visualization service. |
+| Infrastructure management | **Fully managed by AWS** - Cost analysis infrastructure fully managed; no setup required. |
 | Purpose | Understand spend trends and forecasts. |
 | When to use | Analyze service/account/tag costs and usage over time. |
 | When NOT to use | Need raw line-item data lake; use CUR. |
@@ -2136,6 +2273,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Budget tracking and alerts. |
+| Infrastructure management | **Fully managed by AWS** - Budget monitoring fully managed; no infrastructure. |
 | Purpose | Alert or act when cost/usage/reservation thresholds are crossed. |
 | When to use | Need cost governance and notifications. |
 | When NOT to use | Deep historical analysis; use Cost Explorer/CUR. |
@@ -2153,6 +2291,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Detailed billing line-item export. |
+| Infrastructure management | **Fully managed by AWS** - Report generation fully managed; delivered to S3. |
 | Purpose | Cost analytics at maximum granularity. |
 | When to use | Need raw cost data in S3 for Athena/Redshift/BI. |
 | When NOT to use | Quick visual cost trend; use Cost Explorer. |
@@ -2170,6 +2309,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Commitment-based compute discount model. |
+| Infrastructure management | **Fully managed by AWS** - Billing construct; no infrastructure. |
 | Purpose | Reduce compute cost for steady usage. |
 | When to use | Predictable baseline EC2/Fargate/Lambda usage. |
 | When NOT to use | Highly uncertain workloads with no baseline. |
@@ -2189,6 +2329,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Managed ML build/train/deploy platform. |
+| Infrastructure management | **Hybrid** - Training/inference instances require sizing; Serverless Inference and other serverless options available. |
 | Purpose | End-to-end custom ML workflows. |
 | When to use | Need custom model training, notebooks, endpoints, MLOps. |
 | When NOT to use | Need simple pre-trained API like Translate/Rekognition. |
@@ -2206,6 +2347,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Managed image/video analysis. |
+| Infrastructure management | **Fully managed by AWS** - Computer vision API fully managed; no infrastructure. |
 | Purpose | Detect labels, faces, moderation, text, celebrities. |
 | When to use | Pre-trained computer vision API. |
 | When NOT to use | Need custom model training beyond service capabilities. |
@@ -2223,6 +2365,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Document text and data extraction. |
+| Infrastructure management | **Fully managed by AWS** - OCR API fully managed; no infrastructure. |
 | Purpose | Extract text, forms, tables from documents. |
 | When to use | OCR and structured document extraction. |
 | When NOT to use | General image label detection; use Rekognition. |
@@ -2240,6 +2383,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Natural language processing API. |
+| Infrastructure management | **Fully managed by AWS** - NLP API fully managed; no infrastructure. |
 | Purpose | Sentiment, entities, key phrases, language, classification. |
 | When to use | Analyze text without custom NLP infrastructure. |
 | When NOT to use | Speech-to-text or translation only. |
@@ -2257,6 +2401,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Enterprise search service. |
+| Infrastructure management | **Fully managed by AWS** - Search infrastructure fully managed; index-based. |
 | Purpose | Search across documents with ML-powered relevance. |
 | When to use | Internal knowledge base search across repositories. |
 | When NOT to use | Low-level custom search index requiring OpenSearch control. |
@@ -2274,6 +2419,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Conversational bot service. |
+| Infrastructure management | **Fully managed by AWS** - Bot infrastructure fully managed; no servers. |
 | Purpose | Build chatbots and voice bots. |
 | When to use | Need intent recognition and conversational flows. |
 | When NOT to use | Text sentiment/entity analysis only. |
@@ -2291,6 +2437,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Text-to-speech service. |
+| Infrastructure management | **Fully managed by AWS** - TTS API fully managed; no infrastructure. |
 | Purpose | Convert text into lifelike speech. |
 | When to use | Generate spoken audio from text. |
 | When NOT to use | Speech-to-text; use Transcribe. |
@@ -2308,6 +2455,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Speech-to-text service. |
+| Infrastructure management | **Fully managed by AWS** - Speech recognition API fully managed; no infrastructure. |
 | Purpose | Convert audio/video speech to text. |
 | When to use | Call transcription, captions, audio analytics. |
 | When NOT to use | Text-to-speech; use Polly. |
@@ -2325,6 +2473,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Neural machine translation service. |
+| Infrastructure management | **Fully managed by AWS** - Translation API fully managed; no infrastructure. |
 | Purpose | Translate text between languages. |
 | When to use | Localization, multilingual content, chat translation. |
 | When NOT to use | Speech transcription or document OCR. |
@@ -2344,6 +2493,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Managed media transcoding service. |
+| Infrastructure management | **Fully managed by AWS** - Transcoding infrastructure fully managed; pipeline-based. |
 | Purpose | Convert media files into playback formats. |
 | When to use | Legacy/simple transcoding workflows. |
 | When NOT to use | New advanced workflows where AWS Elemental MediaConvert is preferred. |
@@ -2361,6 +2511,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Managed video stream ingestion and storage. |
+| Infrastructure management | **Fully managed by AWS** - Video streaming infrastructure fully managed; stream-based. |
 | Purpose | Capture, process, and store video streams. |
 | When to use | IoT cameras, live video analytics, WebRTC. |
 | When NOT to use | Generic record stream without video needs; use Kinesis Data Streams. |
@@ -2380,6 +2531,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Self-service access to AWS compliance reports and agreements. |
+| Infrastructure management | **Fully managed by AWS** - Document portal fully managed; no infrastructure. |
 | Purpose | Download audit reports and manage agreements. |
 | When to use | Need AWS compliance documentation. |
 | When NOT to use | Need to audit your own resource config; use Config/Audit Manager. |
@@ -2397,6 +2549,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Automated evidence collection for audits. |
+| Infrastructure management | **Fully managed by AWS** - Audit evidence collection fully managed; no infrastructure. |
 | Purpose | Map AWS usage to compliance frameworks. |
 | When to use | Need audit evidence and assessment workflows. |
 | When NOT to use | Real-time threat detection. |
@@ -2414,6 +2567,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Security investigation service. |
+| Infrastructure management | **Fully managed by AWS** - Investigation infrastructure fully managed; automatic data ingestion. |
 | Purpose | Analyze and investigate security findings. |
 | When to use | Need relationship graphs around GuardDuty/Security Hub findings. |
 | When NOT to use | Preventive controls or vulnerability scanning. |
@@ -2431,6 +2585,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Managed Microsoft AD and directory options. |
+| Infrastructure management | **User manages infrastructure** - Directory capacity sizing required; AWS manages software and replication. |
 | Purpose | Provide directory services for AWS workloads. |
 | When to use | Windows apps, domain join, AD-dependent workloads. |
 | When NOT to use | Simple app user pool; use Cognito. |
@@ -2448,6 +2603,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Central security policy management across accounts. |
+| Infrastructure management | **Fully managed by AWS** - Policy orchestration fully managed; no infrastructure. |
 | Purpose | Enforce WAF, Shield, security group, Network Firewall policies. |
 | When to use | Multi-account centralized firewall governance. |
 | When NOT to use | Single resource firewall setup. |
@@ -2465,6 +2621,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Managed network firewall for VPC traffic. |
+| Infrastructure management | **Fully managed by AWS** - Firewall infrastructure fully managed; endpoint-based deployment. |
 | Purpose | Stateful inspection and filtering at network layer. |
 | When to use | Need L3-L7 network inspection between subnets, VPCs, internet. |
 | When NOT to use | HTTP app rule filtering only; use WAF. |
@@ -2482,6 +2639,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Share AWS resources across accounts. |
+| Infrastructure management | **Fully managed by AWS** - Resource sharing service fully managed; no infrastructure. |
 | Purpose | Centralize ownership while sharing resources. |
 | When to use | Share subnets, Transit Gateway, Route 53 Resolver rules, licenses. |
 | When NOT to use | Need data-level app authorization. |
@@ -2501,6 +2659,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Command-line interface for AWS APIs. |
+| Infrastructure management | **Fully managed by AWS** - CLI tool; no infrastructure (client-side tool). |
 | Purpose | Script and operate AWS resources. |
 | When to use | Automation, repeatable admin tasks, CI/CD scripts. |
 | When NOT to use | Long-lived app credentials embedded in code. |
@@ -2518,6 +2677,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Web interface for AWS management. |
+| Infrastructure management | **Fully managed by AWS** - Console fully managed; no infrastructure. |
 | Purpose | Human administration and visibility. |
 | When to use | Exploration, manual checks, dashboards. |
 | When NOT to use | Repeatable production provisioning; use IaC. |
@@ -2535,6 +2695,7 @@ Each service card is concise by design. Use it as a decision checklist.
 | Field | Guidance |
 |---|---|
 | Overview | Repository of serverless applications. |
+| Infrastructure management | **Fully managed by AWS** - Repository service fully managed; deployed apps follow their own model. |
 | Purpose | Discover/deploy reusable serverless components. |
 | When to use | Need prebuilt Lambda/serverless app patterns. |
 | When NOT to use | Custom enterprise deployment pipeline is required. |

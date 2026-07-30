@@ -224,7 +224,7 @@ This document contains direct links to AWS documentation for all services in sco
 | AWS KMS | https://docs.aws.amazon.com/kms/ |
 | Amazon Macie | https://docs.aws.amazon.com/macie/ |
 | AWS Network Firewall | https://docs.aws.amazon.com/network-firewall/ |
-| AWS RAM | https://docs.aws.amazon.com/ram/ |
+| AWS RAM | https://docs.aws.amazon.com/ram/latest/userguide/what-is.html|
 | AWS Secrets Manager | https://docs.aws.amazon.com/secretsmanager/ |
 | AWS Security Hub | https://docs.aws.amazon.com/securityhub/ |
 | AWS Shield | https://docs.aws.amazon.com/shield/ |

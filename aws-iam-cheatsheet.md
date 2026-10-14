@@ -169,7 +169,8 @@ Organization Structure:
 ### IAM Roles
 
 #### Overview
-IAM Roles provide temporary credentials that can be assumed by users, applications, or AWS services.
+IAM roles are identities with defined permissions that can be assumed by authorized principals—including IAM users, 
+other IAM roles, AWS services, and federated identities—to obtain temporary security credentials.
 
 #### Characteristics
 - **Temporary credentials:** Auto-rotating, time-limited
